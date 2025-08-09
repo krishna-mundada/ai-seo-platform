@@ -1,0 +1,9 @@
+backend/
+api/
+requirements.txt
+*.py
+__pycache__/
+*.pyc
+.env
+node_modules/
+.git/
