@@ -81,7 +81,7 @@ export function ContentGenerator() {
   // Fetch businesses
   const { data: businesses = [], isLoading: businessesLoading } = useQuery({
     queryKey: ['businesses'],
-    queryFn: () => businessApi.list().then(res => res.data),
+    queryFn: () => businessApi.list().then((res: any) => res.data),
   })
 
   const form = useForm({

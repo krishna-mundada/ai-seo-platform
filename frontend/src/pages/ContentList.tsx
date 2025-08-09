@@ -11,7 +11,6 @@ import {
   TextInput,
   LoadingOverlay,
   Modal,
-  Textarea,
   Box,
   UnstyledButton,
   Center
@@ -93,7 +92,7 @@ export function ContentList() {
   // Fetch content from API
   const { data: content = [], isLoading, error } = useQuery({
     queryKey: ['content'],
-    queryFn: () => contentApi.list().then(res => res.data),
+    queryFn: () => contentApi.list().then((res: any) => res.data),
   })
 
   // Delete mutation

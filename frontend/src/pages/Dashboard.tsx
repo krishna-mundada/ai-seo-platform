@@ -1,5 +1,5 @@
 import { Grid, Card, Text, Group, Stack, Badge, ActionIcon, Progress, LoadingOverlay, Button } from '@mantine/core'
-import { IconEye, IconThumbUp, IconShare, IconTrendingUp, IconSparkles, IconFileText, IconBuildingStore, IconCalendar } from '@tabler/icons-react'
+import { IconEye, IconTrendingUp, IconSparkles, IconFileText, IconBuildingStore, IconCalendar } from '@tabler/icons-react'
 import { useQuery } from '@tanstack/react-query'
 import { contentApi, businessApi } from '../lib/api'
 import { useNavigate } from 'react-router-dom'
@@ -22,16 +22,6 @@ interface Content {
   meta_description?: string
 }
 
-interface Business {
-  id: number
-  name: string
-  industry?: string
-  description?: string
-  website_url?: string
-  target_audience?: string
-  brand_voice?: string
-  created_at: string
-}
 
 const contentTypeLabels = {
   blog_post: 'Blog Post',
@@ -55,12 +45,12 @@ export function Dashboard() {
   // Fetch content and businesses
   const { data: content = [], isLoading: contentLoading } = useQuery({
     queryKey: ['content'],
-    queryFn: () => contentApi.list().then(res => res.data),
+    queryFn: () => contentApi.list().then((res: any) => res.data),
   })
 
   const { data: businesses = [], isLoading: businessesLoading } = useQuery({
     queryKey: ['businesses'],
-    queryFn: () => businessApi.list().then(res => res.data),
+    queryFn: () => businessApi.list().then((res: any) => res.data),
   })
 
   // Calculate dashboard metrics

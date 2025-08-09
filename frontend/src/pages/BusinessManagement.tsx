@@ -56,13 +56,13 @@ export function BusinessManagement() {
   // Fetch businesses
   const { data: businesses = [], isLoading } = useQuery({
     queryKey: ['businesses'],
-    queryFn: () => businessApi.list().then(res => res.data),
+    queryFn: () => businessApi.list().then((res: any) => res.data),
   })
 
   // Fetch industries
   const { data: industries = [], isLoading: industriesLoading } = useQuery({
     queryKey: ['industries'],
-    queryFn: () => industryApi.list({ active_only: true }).then(res => res.data),
+    queryFn: () => industryApi.list({ active_only: true }).then((res: any) => res.data),
   })
 
   const form = useForm({

@@ -1,4 +1,4 @@
-import { AppShell, Burger, Group, Text, NavLink, ScrollArea, Button, Avatar, Menu } from '@mantine/core'
+import { AppShell, Burger, Group, Text, NavLink, ScrollArea, Button } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { Routes, Route, useLocation, Link } from 'react-router-dom'
 import { 
@@ -7,11 +7,9 @@ import {
   IconBuildingStore, 
   IconSpeakerphone, 
   IconSettings,
-  IconSparkles,
-  IconLogout,
-  IconUser
+  IconSparkles
 } from '@tabler/icons-react'
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react'
 import { Dashboard } from './pages/Dashboard'
 import { ContentGenerator } from './pages/ContentGenerator'
 import { ContentList } from './pages/ContentList'
