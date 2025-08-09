@@ -83,7 +83,7 @@ export function BusinessManagement() {
 
   // Create business mutation
   const createMutation = useMutation({
-    mutationFn: businessApi.create,
+    mutationFn: (data: any) => businessApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['businesses'] })
       notifications.show({
@@ -125,7 +125,7 @@ export function BusinessManagement() {
 
   // Delete business mutation
   const deleteMutation = useMutation({
-    mutationFn: businessApi.delete,
+    mutationFn: (id: number) => businessApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['businesses'] })
       notifications.show({
