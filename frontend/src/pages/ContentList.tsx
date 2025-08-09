@@ -22,6 +22,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { contentApi } from '../lib/api'
 import { notifications } from '@mantine/notifications'
 import { useDisclosure } from '@mantine/hooks'
+import { useNavigate } from 'react-router-dom'
+import { EditContentModal } from '../components/EditContentModal'
 
 interface Content {
   id: number
@@ -68,11 +70,13 @@ const contentTypeLabels = {
 }
 
 export function ContentList() {
+  const navigate = useNavigate()
   const [statusFilter, setStatusFilter] = useState<string | null>(null)
   const [typeFilter, setTypeFilter] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [selectedContent, setSelectedContent] = useState<Content | null>(null)
   const [viewOpened, { open: openView, close: closeView }] = useDisclosure(false)
+  const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [sortField, setSortField] = useState<SortField>('created_at')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [resizing, setResizing] = useState<string | null>(null)
@@ -176,6 +180,38 @@ export function ContentList() {
     openView()
   }
 
+  const handleEditContent = (item: Content) => {
+    setSelectedContent(item)
+    openEdit()
+  }
+
+  const handleSaveEdit = async (title: string, content: string) => {
+    if (!selectedContent) return
+    
+    try {
+      // Update the content in the database
+      await contentApi.update(selectedContent.id, {
+        title,
+        content_text: content
+      })
+      
+      // Refresh the content list
+      queryClient.invalidateQueries({ queryKey: ['content'] })
+      
+      notifications.show({
+        title: 'Content Updated!',
+        message: 'Your content has been successfully edited',
+        color: 'green',
+      })
+    } catch (error) {
+      notifications.show({
+        title: 'Update Failed',
+        message: 'There was an error updating the content',
+        color: 'red',
+      })
+    }
+  }
+
   const handleDeleteContent = (id: number) => {
     if (window.confirm('Are you sure you want to delete this content?')) {
       deleteMutation.mutate(id)
@@ -259,6 +295,7 @@ export function ContentList() {
               <ActionIcon 
                 variant="subtle" 
                 size="sm"
+                onClick={() => handleEditContent(item)}
                 title="Edit content"
               >
                 <IconEdit size={16} />
@@ -299,7 +336,10 @@ export function ContentList() {
         <Text size="xl" fw={700}>
           Content Library
         </Text>
-        <Button leftSection={<IconPlus size={16} />}>
+        <Button 
+          leftSection={<IconPlus size={16} />}
+          onClick={() => navigate('/generate')}
+        >
           Generate New Content
         </Button>
       </Group>
@@ -453,7 +493,52 @@ export function ContentList() {
         onClose={closeView}
         title="Content Details"
         size="xl"
+        centered
+        withCloseButton
+        withinPortal={false}
+        trapFocus
+        lockScroll
+        overlayProps={{ backgroundOpacity: 0.2, blur: 0 }}
+        styles={{
+          content: {
+            zIndex: 10000,
+            backgroundColor: 'white',
+            border: '1px solid #e9ecef',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+            borderRadius: '8px',
+            margin: '0 auto',
+          },
+          overlay: {
+            zIndex: 9999,
+          },
+          header: {
+            backgroundColor: 'white',
+            borderBottom: '1px solid #e9ecef',
+            padding: '16px 24px',
+            zIndex: 10001,
+            position: 'relative',
+          },
+          body: {
+            backgroundColor: 'white',
+            padding: '24px',
+            zIndex: 10001,
+            position: 'relative',
+          },
+          inner: {
+            zIndex: 10000,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          root: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        }}
       >
+        <div>
+        
         {selectedContent && (
           <Stack gap="md">
             <div>
@@ -531,7 +616,17 @@ export function ContentList() {
             </div>
           </Stack>
         )}
+        </div>
       </Modal>
+
+      {/* Edit Content Modal */}
+      <EditContentModal
+        opened={editOpened}
+        onClose={closeEdit}
+        title={selectedContent?.title || ''}
+        content={selectedContent?.content_text || ''}
+        onSave={handleSaveEdit}
+      />
     </Stack>
   )
 }

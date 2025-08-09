@@ -11,8 +11,7 @@ import {
   Grid,
   Badge,
   LoadingOverlay,
-  Alert,
-  Modal
+  Alert
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useState } from 'react'
@@ -21,6 +20,7 @@ import { notifications } from '@mantine/notifications'
 import { useQuery } from '@tanstack/react-query'
 import { businessApi, contentApi, suggestionsApi } from '../lib/api'
 import { useDisclosure } from '@mantine/hooks'
+import { EditContentModal } from '../components/EditContentModal'
 
 const contentTypes = [
   { value: 'blog_post', label: 'Blog Post' },
@@ -56,6 +56,7 @@ interface Business {
 }
 
 interface GeneratedContent {
+  id: number
   title: string
   content_text: string
   content_type: string
@@ -69,8 +70,6 @@ export function ContentGenerator() {
   const [loading, setLoading] = useState(false)
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null)
   const [editOpened, { open: openEdit, close: closeEdit }] = useDisclosure(false)
-  const [editedTitle, setEditedTitle] = useState('')
-  const [editedContent, setEditedContent] = useState('')
   const [approving, setApproving] = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [savingDraft, setSavingDraft] = useState(false)
@@ -152,21 +151,18 @@ export function ContentGenerator() {
   const handleEditContent = () => {
     console.log('Edit button clicked', generatedContent)
     if (generatedContent) {
-      setEditedTitle(generatedContent.title)
-      setEditedContent(generatedContent.content_text)
       openEdit()
       console.log('Modal should be open now')
     }
   }
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = (title: string, content: string) => {
     if (generatedContent) {
       setGeneratedContent({
         ...generatedContent,
-        title: editedTitle,
-        content_text: editedContent
+        title,
+        content_text: content
       })
-      closeEdit()
       notifications.show({
         title: 'Content Updated!',
         message: 'Your content has been successfully edited',
@@ -315,7 +311,7 @@ export function ContentGenerator() {
       })
       
       // Fallback to hardcoded suggestions if AI fails
-      const business = businesses.find(b => b.id.toString() === form.values.business_id)
+      const business = businesses.find((b: { id: { toString: () => string } }) => b.id.toString() === form.values.business_id)
       if (business) {
         const fallbackSuggestions = getTopicSuggestions(business, form.values.content_type, form.values.category)
         setTopicSuggestions(fallbackSuggestions)
@@ -456,7 +452,7 @@ export function ContentGenerator() {
       })
       
       // Fallback to hardcoded suggestions if AI fails
-      const business = businesses.find(b => b.id.toString() === form.values.business_id)
+      const business = businesses.find((b: { id: { toString: () => string } }) => b.id.toString() === form.values.business_id)
       if (business) {
         const fallbackSuggestions = getKeywordSuggestions(business, form.values.content_type, form.values.category, form.values.topic)
         setKeywordSuggestions(fallbackSuggestions)
@@ -861,70 +857,13 @@ export function ContentGenerator() {
       </Grid.Col>
 
       {/* Edit Content Modal */}
-      {editOpened && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          <Card 
-            style={{ 
-              width: '90%', 
-              maxWidth: '800px', 
-              maxHeight: '80vh', 
-              overflow: 'auto' 
-            }}
-            shadow="xl"
-            padding="xl"
-          >
-            <Stack gap="md">
-              <Group justify="space-between">
-                <Text size="lg" fw={700}>Edit Content</Text>
-                <Button variant="subtle" size="sm" onClick={closeEdit}>✕</Button>
-              </Group>
-              
-              <TextInput
-                label="Title"
-                placeholder="Enter content title"
-                value={editedTitle}
-                onChange={(event) => setEditedTitle(event.currentTarget.value)}
-                required
-              />
-              
-              <Textarea
-                label="Content"
-                placeholder="Enter your content here..."
-                value={editedContent}
-                onChange={(event) => setEditedContent(event.currentTarget.value)}
-                minRows={12}
-                maxRows={20}
-                autosize
-                required
-              />
-              
-              <Group justify="flex-end" gap="sm">
-                <Button variant="outline" onClick={closeEdit}>
-                  Cancel
-                </Button>
-                <Button 
-                  onClick={handleSaveEdit}
-                  leftSection={<IconCheck size={16} />}
-                >
-                  Save Changes
-                </Button>
-              </Group>
-            </Stack>
-          </Card>
-        </div>
-      )}
+      <EditContentModal
+        opened={editOpened}
+        onClose={closeEdit}
+        title={generatedContent?.title || ''}
+        content={generatedContent?.content_text || ''}
+        onSave={handleSaveEdit}
+      />
     </Grid>
   )
 }

@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 class Settings(BaseSettings):
     # Database
@@ -90,6 +90,15 @@ class Settings(BaseSettings):
     
     # Redis
     redis_url: str = "redis://localhost:6379"
+    
+    # CORS
+    cors_origins: Optional[str] = None
+    
+    @property
+    def CORS_ORIGINS(self) -> List[str]:
+        if self.cors_origins:
+            return [origin.strip() for origin in self.cors_origins.split(",")]
+        return []
     
     # Social Platform APIs (for future)
     linkedin_client_id: Optional[str] = None

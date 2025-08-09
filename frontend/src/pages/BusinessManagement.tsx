@@ -10,17 +10,16 @@ import {
   Modal,
   TextInput,
   Textarea,
-  Select,
   Combobox,
-  Input,
   InputBase,
   useCombobox,
-  LoadingOverlay
+  LoadingOverlay,
+  Input
 } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useForm } from '@mantine/form'
 import { IconPlus, IconEdit, IconTrash, IconBuildingStore } from '@tabler/icons-react'
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { businessApi, industryApi } from '../lib/api'
 import { notifications } from '@mantine/notifications'
@@ -61,7 +60,7 @@ export function BusinessManagement() {
   })
 
   // Fetch industries
-  const { data: industries = [], isLoading: industriesLoading, error: industriesError } = useQuery({
+  const { data: industries = [], isLoading: industriesLoading } = useQuery({
     queryKey: ['industries'],
     queryFn: () => industryApi.list({ active_only: true }).then(res => res.data),
   })
@@ -212,7 +211,7 @@ export function BusinessManagement() {
         </Card>
       ) : (
         <Grid>
-          {businesses.map((business) => (
+          {businesses.map((business: any) => (
             <Grid.Col span={{ base: 12, sm: 6, xl: 4 }} key={business.id}>
               <Card shadow="sm" padding="lg" radius="md" withBorder h="100%" style={{ minHeight: 280 }}>
                 <Stack gap="md" h="100%">
@@ -333,11 +332,10 @@ export function BusinessManagement() {
                   onClick={() => combobox.toggleDropdown()}
                   rightSectionPointerEvents="none"
                   label="Industry"
-                  placeholder={industriesLoading ? "Loading industries..." : "Select industry"}
                   required
                   disabled={industriesLoading}
                 >
-                  {form.values.industry}
+                  {form.values.industry || <Input.Placeholder> {industriesLoading ? "Loading industries..." : "Select industry"} </Input.Placeholder>}
                 </InputBase>
               </Combobox.Target>
 

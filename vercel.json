@@ -1,0 +1,33 @@
+{
+  "builds": [
+    {
+      "src": "frontend/**/*",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist"
+      }
+    },
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "outputDirectory": "frontend/dist",
+  "buildCommand": "cd frontend && pnpm install && pnpm build",
+  "installCommand": "cd backend && pip install -r requirements.txt && cd ../frontend && pnpm install",
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.9"
+    }
+  }
+}

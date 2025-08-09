@@ -1,0 +1,13 @@
+[build]
+builder = "dockerize"
+
+[deploy]
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[variables]
+# Railway will automatically set PORT
+# Other environment variables should be set in Railway dashboard
