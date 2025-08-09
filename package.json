@@ -1,0 +1,18 @@
+{
+  "name": "ai-seo-platform",
+  "version": "1.0.0",
+  "description": "AI-powered SEO and marketing automation platform",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -F frontend dev",
+    "build": "pnpm -F frontend build",
+    "preview": "pnpm -F frontend preview",
+    "lint": "pnpm -F frontend lint",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "backend:dev": "cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+  },
+  "keywords": ["ai", "seo", "marketing", "automation"],
+  "author": "Krishna",
+  "license": "MIT"
+}

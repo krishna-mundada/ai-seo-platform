@@ -1,0 +1,3 @@
+packages:
+  - 'frontend'
+  # Backend is Python, not included in workspace
